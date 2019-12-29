@@ -8,6 +8,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -20,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerViewNotes;
     private final ArrayList<Note> notes = new ArrayList<>();
     private NotesAdapter adapter;
-    private NotesDatabase database;
+   private MainViewModel mainViewModel;
 
 
     @Override
@@ -32,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
             actionBar.hide();
         }
 
-        database = NotesDatabase.getInstance(this);
+        mainViewModel = ViewModelProviders.of(this).get(MainViewModel.class);
 
         recyclerViewNotes = findViewById(R.id.recyclerViewNotes);
         adapter = new NotesAdapter(notes);
@@ -70,11 +73,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void remove(int position) {
-        Note note = notes.get(position);
-        database.notesDao().deleteNote(note);
-        getData();
-        adapter.notifyDataSetChanged();
-
+        Note note = adapter.getNotes().get(position);
+        mainViewModel.deletetNote(note);
     }
 
     public void onClickAddNote(View view) {
@@ -83,8 +83,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getData() {
-        List<Note> notesFromDB = database.notesDao().getAllNotes();
-        notes.clear();
-        notes.addAll(notesFromDB);
+        LiveData<List<Note>> notesFromDB = mainViewModel.getNotes();
+        notesFromDB.observe(this, new Observer<List<Note>>() {
+            @Override
+            public void onChanged(List<Note> notesFromLiveData) {
+                adapter.setNotes(notesFromLiveData);
+            }
+        });
+
     }
 }

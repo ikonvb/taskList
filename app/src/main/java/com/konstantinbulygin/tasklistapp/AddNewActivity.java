@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProviders;
 
 public class AddNewActivity extends AppCompatActivity {
 
@@ -18,15 +19,14 @@ public class AddNewActivity extends AppCompatActivity {
     private EditText editTextDescription;
     private Spinner spinnerDaysOfWeek;
     private RadioGroup radioGroupPriority;
-
-    private NotesDatabase database;
+    private MainViewModel mainViewModel;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_new);
-        database = NotesDatabase.getInstance(this);
+        mainViewModel = ViewModelProviders.of(this).get(MainViewModel.class);
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -49,7 +49,7 @@ public class AddNewActivity extends AppCompatActivity {
 
         if (isFilled(title, description)) {
             Note note = new Note(title, description, dayOfWeek, priority);
-            database.notesDao().insertNote(note);
+            mainViewModel.insertNote(note);
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
         } else {
