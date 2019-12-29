@@ -1,8 +1,6 @@
 package com.konstantinbulygin.tasklistapp;
 
-import android.content.ContentValues;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -20,13 +18,15 @@ public class AddNewActivity extends AppCompatActivity {
     private EditText editTextDescription;
     private Spinner spinnerDaysOfWeek;
     private RadioGroup radioGroupPriority;
-    private NotesDBHelper dbHelper;
-    private SQLiteDatabase database;
+
+    private NotesDatabase database;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_new);
+        database = NotesDatabase.getInstance(this);
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -37,8 +37,6 @@ public class AddNewActivity extends AppCompatActivity {
         editTextDescription = findViewById(R.id.editTextDescription);
         spinnerDaysOfWeek = findViewById(R.id.spinnerDaysOfWeek);
         radioGroupPriority = findViewById(R.id.radioGroupPriority);
-        dbHelper = new NotesDBHelper(this);
-        database = dbHelper.getWritableDatabase();
     }
 
     public void onClickSaveNote(View view) {
@@ -50,15 +48,8 @@ public class AddNewActivity extends AppCompatActivity {
         int priority = Integer.parseInt(radioButton.getText().toString());
 
         if (isFilled(title, description)) {
-
-            ContentValues contentValues = new ContentValues();
-            contentValues.put(NotesContract.NotesEntry.COLUMN_TITLE, title);
-            contentValues.put(NotesContract.NotesEntry.COLUMN_DESCRIPTION, description);
-            contentValues.put(NotesContract.NotesEntry.COLUMN_DAY_OF_WEEK, dayOfWeek);
-            contentValues.put(NotesContract.NotesEntry.COLUMN_PRIORITY, priority);
-
-            database.insert(NotesContract.NotesEntry.TABLE_NAME, null, contentValues);
-
+            Note note = new Note(title, description, dayOfWeek, priority);
+            database.notesDao().insertNote(note);
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
         } else {
