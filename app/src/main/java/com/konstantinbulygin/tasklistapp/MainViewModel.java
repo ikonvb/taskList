@@ -2,37 +2,35 @@ package com.konstantinbulygin.tasklistapp;
 
 import android.app.Application;
 import android.os.AsyncTask;
-
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
-
 import java.util.List;
 
 public class MainViewModel extends AndroidViewModel {
 
-    private static NotesDatabase database;
-    private LiveData<List<Note>> notes;
+    private static NotesDatabase mainViewModelDatabase;
+    private LiveData<List<Note>> mainViewModelLiveDataNotes;
 
     public MainViewModel(@NonNull Application application) {
         super(application);
-        database = NotesDatabase.getInstance(getApplication());
-        notes = database.notesDao().getAllNotes();
+        mainViewModelDatabase = NotesDatabase.getInstance(getApplication());
+        mainViewModelLiveDataNotes = mainViewModelDatabase.notesDao().getAllNotes();
     }
 
-    public LiveData<List<Note>> getNotes() {
-        return notes;
+    public LiveData<List<Note>> getMainViewModelLiveDataNotes() {
+        return mainViewModelLiveDataNotes;
     }
 
     public void insertNote(Note note) {
         new InsertTask().execute(note);
     }
 
-    public void deletetNote(Note note) {
+    public void deleteNote(Note note) {
         new DeleteTask().execute(note);
     }
 
-    public void deletetAllNote() {
+    public void deleteAllNote() {
         new DeleteAllTask().execute();
     }
 
@@ -41,7 +39,7 @@ public class MainViewModel extends AndroidViewModel {
         @Override
         protected Void doInBackground(Note... notes) {
             if (notes != null && notes.length > 0) {
-                database.notesDao().insertNote(notes[0]);
+                mainViewModelDatabase.notesDao().insertNote(notes[0]);
             }
             return null;
         }
@@ -52,7 +50,7 @@ public class MainViewModel extends AndroidViewModel {
         @Override
         protected Void doInBackground(Note... notes) {
             if (notes != null && notes.length > 0) {
-                database.notesDao().deleteNote(notes[0]);
+                mainViewModelDatabase.notesDao().deleteNote(notes[0]);
             }
             return null;
         }
@@ -62,7 +60,7 @@ public class MainViewModel extends AndroidViewModel {
 
         @Override
         protected Void doInBackground(Void...notes) {
-            database.notesDao().deleteAllNotes();
+            mainViewModelDatabase.notesDao().deleteAllNotes();
             return null;
         }
     }

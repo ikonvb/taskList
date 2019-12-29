@@ -23,21 +23,25 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerViewNotes;
     private final ArrayList<Note> notes = new ArrayList<>();
     private NotesAdapter adapter;
-   private MainViewModel mainViewModel;
+    private MainViewModel mainViewModel;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //hide actionbar from main screen
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.hide();
         }
 
+        //get reference on ViewModel object
         mainViewModel = ViewModelProviders.of(this).get(MainViewModel.class);
 
         recyclerViewNotes = findViewById(R.id.recyclerViewNotes);
+
         adapter = new NotesAdapter(notes);
         recyclerViewNotes.setLayoutManager(new LinearLayoutManager(this));
         recyclerViewNotes.setAdapter(adapter);
@@ -74,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void remove(int position) {
         Note note = adapter.getNotes().get(position);
-        mainViewModel.deletetNote(note);
+        mainViewModel.deleteNote(note);
     }
 
     public void onClickAddNote(View view) {
@@ -83,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getData() {
-        LiveData<List<Note>> notesFromDB = mainViewModel.getNotes();
+        LiveData<List<Note>> notesFromDB = mainViewModel.getMainViewModelLiveDataNotes();
         notesFromDB.observe(this, new Observer<List<Note>>() {
             @Override
             public void onChanged(List<Note> notesFromLiveData) {
