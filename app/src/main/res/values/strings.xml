@@ -6,6 +6,7 @@
     <string name="priority_2">2</string>
     <string name="priority_3">3</string>
     <string name="save_note">add note</string>
+    <string name="warning_fill_fields">Fill all fields</string>
 
     <string-array name="day_of_week">
         <item>Monday</item>
